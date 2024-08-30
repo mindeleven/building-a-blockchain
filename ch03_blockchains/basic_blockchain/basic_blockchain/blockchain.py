@@ -11,14 +11,13 @@ class Blockchain(object):
 
         # Create the genesis block
         print("Creating genesis block")
-        self.new_block
-
-
+        self.new_block()
+    
     def new_block(self, previous_hash=None):
         # generates a new block and adds it to the chain
         block = {
             'index': len(self.chain),
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now().isoformat(), #.utcnow().isoformat(),
             'transactions': self.pending_transactions,
             'previous_hash': previous_hash,
         }
