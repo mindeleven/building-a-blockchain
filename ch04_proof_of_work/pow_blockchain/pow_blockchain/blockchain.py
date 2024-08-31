@@ -30,6 +30,7 @@ class Blockchain(object):
             'timestamp': datetime.now().isoformat(), #.utcnow().isoformat(),
             'transactions': self.pending_transactions,
             'previous_hash': previous_hash,
+            'nonce': None,
         }
         # get the hash of this new block, and add it to the block
         block_hash = self.hash(block)
@@ -61,4 +62,10 @@ class Blockchain(object):
             "sender": sender,
             "amount": amount,
         })
+
+    def proof_of_work(self):
+        pass
+
+    def valid_hash(self):
+        pass
 
