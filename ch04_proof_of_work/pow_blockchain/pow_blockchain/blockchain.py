@@ -4,16 +4,6 @@ import random
 from datetime import datetime
 from hashlib import sha256
 
-'''
-# testing the blockchain on the terminal with python:
-$ poetry shell
-$ python3 -i blockchain.py
->>> bc = Blockchain()
->>> bc.chain
-# add a new block by copying the hash from the terminal output
->>> bc.new_block(previous_hash="XXX")
-'''
-
 class Blockchain(object):
 
     def __init__(self):
