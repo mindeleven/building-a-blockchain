@@ -2,7 +2,8 @@ import asyncio
 import time
 
 async def greet(name, delay):
-    await asyncio.sleep(delay)
+    # tasks are paused by the following line od code: await asyncio.sleep
+    await asyncio.sleep(delay) # pause the function till sleep delay is reached
     print(f'{name}: I waited {delay} seconds before saying "hello"')
 
 async def main():
