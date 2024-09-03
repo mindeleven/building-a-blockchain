@@ -107,7 +107,32 @@ async def handle_connection(reader, writer):
     # writer.write("You sent: ".encode() + response)
     connection_pool.add_new_user_to_pool(writer)
     connection_pool.send_welcome_message(writer)
-    await writer.drain()
+    
+    # announce the arrival of this new user
+    connection_pool.broadcast_user_join(writer)
+
+    while True:
+        try:
+            data = await reader.readuntil(b"\n")
+        except asyncio.exceptions.IncompleteReadError:
+            connection_pool.broadcast_user_quit(writer)
+            break
+
+        message = data.decode().strip()
+        if message == "\quit":
+            connection_pool.broadcast_user_quit(writer)
+            break
+        elif message == "\list":
+            connection_pool.list_users(writer)
+        else:
+            connection_pool.broadcast_new_message(writer, message)
+
+        await writer.drain()
+
+        if writer.is_closing():
+            break
+    
+    # we're now outside the message loop and the user has quit
 
     # let's close the connection and clean up
     writer.close()
