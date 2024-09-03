@@ -16,7 +16,10 @@ import asyncio
 class ConnectionPool:
     def __init__(self):
         self.connection_pool = set()
-    
+
+    # writer passed to connection pool is an instance of StreamWriter
+    # StreamWriter -> an asyncio object the writes to an underlying connection
+    # (underlying connection = connected user)
     def send_welcome_message(self, writer):
         """
         Sends a welcome message to a newly connected client
