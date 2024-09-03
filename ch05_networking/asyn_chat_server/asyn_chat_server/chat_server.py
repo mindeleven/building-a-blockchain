@@ -52,19 +52,19 @@ class ConnectionPool:
         """
         Calls the broadcast method with a "user joining" message
         """
-        pass
+        self.broadcast(writer, f"{writer.nickname} just joined")
 
     def broadcast_user_quit(self, writer):
         """
         Calls the broadcast method with a "user quitting" message
         """
-        pass
+        self.broadcast(writer, f"{writer.nickname} just quit")
 
     def broadcast_new_message(self, writer, message):
         """
         Calls the broadcast method with a user's chat message
         """
-        pass
+        self.broadcast(writer, f"[{writer.nickname}] {message}")
 
     def list_users(self, writer):
         """
