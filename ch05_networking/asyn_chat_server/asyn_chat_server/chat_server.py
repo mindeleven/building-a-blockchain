@@ -27,9 +27,14 @@ class ConnectionPool:
         """
         message = dedent(f"""
         ===
-        ( Welcome {writer.nickname}!
+        Welcome {writer.nickname}!
 
         There are {len(self.connection_pool) -1} user(s) here beside you
+
+        Help: 
+         - Type anything to chat
+         - /list will list all the connected users
+         - /quit will disconnect you
         ===     
         """)
         writer.write(f"{message}\n".encode())
