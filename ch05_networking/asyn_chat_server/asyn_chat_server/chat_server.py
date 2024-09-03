@@ -43,7 +43,10 @@ class ConnectionPool:
         """
         Broadcasts a general message to the entire pool
         """
-        pass
+        for user in self.connection_pool:
+            if user != writer:
+                # we don't need to also broadcast to the user sending the message
+                user.write(f"{message}\n".encode())
 
     def broadcast_user_join(self, writer):
         """
