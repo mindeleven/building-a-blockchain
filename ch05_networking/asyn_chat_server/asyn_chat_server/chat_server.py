@@ -119,10 +119,10 @@ async def handle_connection(reader, writer):
             break
 
         message = data.decode().strip()
-        if message == "\quit":
+        if message == "/quit":
             connection_pool.broadcast_user_quit(writer)
             break
-        elif message == "\list":
+        elif message == "/list":
             connection_pool.list_users(writer)
         else:
             connection_pool.broadcast_new_message(writer, message)
