@@ -12,6 +12,7 @@
 # -> to accomplish tasks we create ConnectionPool class
 
 import asyncio
+from textwrap import dedent
 
 class ConnectionPool:
     def __init__(self):
@@ -24,7 +25,14 @@ class ConnectionPool:
         """
         Sends a welcome message to a newly connected client
         """
-        pass
+        message = dedent(f"""
+        ===
+        ( Welcome {writer.nickname}!
+
+        There are {len(self.connection_pool) -1} user(s) here beside you
+        ===     
+        """)
+        writer.write(f"{message}\n".encode())
 
     def broadcast(self, writer, message):
         """
@@ -74,11 +82,15 @@ class ConnectionPool:
 # test echo server with telnet 127.0.0.1 8888
 # telnet allows to open up socket connections to remote hosts
 async def handle_connection(reader, writer):
-    writer.write("Hello new user, type something...\n".encode())
+    # get a nickname from the client
+    writer.write("> Choose your nickname:\n".encode())
 
-    data = await reader.readuntil(b"\n")
+    response = await reader.readuntil(b"\n")
+    writer.nickname = response.decode().strip()
 
-    writer.write("You sent: ".encode() + data)
+    # writer.write("You sent: ".encode() + response)
+    connection_pool.add_new_user_to_pool(writer)
+    connection_pool.send_welcome_message(writer)
     await writer.drain()
 
     # let's close the connection and clean up
