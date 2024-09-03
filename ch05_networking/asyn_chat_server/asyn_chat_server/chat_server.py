@@ -70,7 +70,15 @@ class ConnectionPool:
         """
         List all the users in the pool
         """
-        pass
+        message = "===\n"
+        message += "Currently connected users:"
+        for user in self.connection_pool:
+            if user == writer:
+                message += f"\n - {user.nickname} (you)"
+            else:
+                message += f"\n - {user.nickname}"
+        message += "\n==="
+        writer.write(f"{message}\n".encode())
 
     def add_new_user_to_pool(self, writer):
         """
