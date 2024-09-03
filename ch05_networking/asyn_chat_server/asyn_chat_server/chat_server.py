@@ -90,4 +90,5 @@ async def main():
         await server.serve_forever()
 
 
+connection_pool = ConnectionPool()
 asyncio.run(main())
