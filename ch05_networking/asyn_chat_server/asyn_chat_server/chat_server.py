@@ -18,31 +18,54 @@ class ConnectionPool:
         self.connection_pool = set()
     
     def send_welcome_message(self, writer):
+        """
+        Sends a welcome message to a newly connected client
+        """
         pass
 
     def broadcast(self, writer, message):
+        """
+        Broadcasts a general message to the entire pool
+        """
         pass
 
     def broadcast_user_join(self, writer):
+        """
+        Calls the broadcast method with a "user joining" message
+        """
         pass
 
     def broadcast_user_quit(self, writer):
+        """
+        Calls the broadcast method with a "user quitting" message
+        """
         pass
 
     def broadcast_new_message(self, writer, message):
+        """
+        Calls the broadcast method with a user's chat message
+        """
         pass
 
     def list_users(self, writer):
+        """
+        List all the users in the pool
+        """
         pass
 
     def add_new_user_to_pool(self, writer):
-        pass
+        """
+        Add a new user to our existing pool
+        """
+        self.connection_pool.add(writer)
 
     def remove_user_from_pool(self, writer):
-        pass
+        """
+        Removes an existing user from our existing pool
+        """
+        self.connection_pool.remove(writer)
 
 
-    
 
 # simple echo server functionality that sends back any message sent to it
 # test echo server with telnet 127.0.0.1 8888
