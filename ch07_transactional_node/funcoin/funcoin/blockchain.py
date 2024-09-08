@@ -1,9 +1,17 @@
+import asyncio
 import json
+import math
+import random
 
-from datetime import datetime
+from datetime import datetime # to be replaced with time
 from hashlib import sha256
+from time import time
+
+import structlog
+logger = structlog.get_logger("blockchain")
 
 '''
+# let's see if the still works >>>
 # testing the blockchain on the terminal with python:
 $ poetry shell
 $ python3 -i blockchain.py
@@ -18,29 +26,25 @@ class Blockchain(object):
     def __init__(self):
         self.chain = []
         self.pending_transactions = []
+        self.target = "0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 
         # Create the genesis block
-        print("Creating genesis block")
-        self.new_block()
+        logger.info("Creating genesis block")
+        self.chain.append(self.new_block())
     
-    def new_block(self, previous_hash=None):
-        # generates a new block and adds it to the chain
-        block = {
-            'index': len(self.chain),
-            'timestamp': datetime.now().isoformat(), #.utcnow().isoformat(),
-            'transactions': self.pending_transactions,
-            'previous_hash': previous_hash,
-        }
-        # get the hash of this new block, and add it to the block
-        block_hash = self.hash(block)
-        block["hash"] = block_hash
+    def new_block(self):
+        block = self.create_block(
+            height = len(self.chain),
+            transactions = self.pending_transactions,
+            previous_hash = self.last_block["hash"] if self.last_block else None,
+            nonce = format(random.getrandbits(64), "x"),
+            target = self.target,
+            timestamp = time(),
+        )
 
         # reset the list of pending transactions
         self.pending_transactions = []
-        # add the block to the chain
-        self.chain.append(block)
 
-        print(f"Created block {block['index']}")
         return block
 
     @staticmethod
