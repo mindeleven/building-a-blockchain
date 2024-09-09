@@ -46,16 +46,42 @@ class Blockchain(object):
         self.pending_transactions = []
 
         return block
+    
+    @staticmethod
+    def create_block(
+        self, height, transactions, previous_hash, nonce, target, timestamp=None
+    ):
+        block = {
+            "height": height,
+            "transactions": transactions,
+            "previous_hash": previous_hash,
+            "nonce": nonce,
+            "target": target,
+            "timestamp": timestamp or time(),
+        }
+
+        # get the hash of this new block and add it to the block
+        block["hash"] = self.hash(block)
+        return block
 
     @staticmethod
     def hash(block):
         # we ensure that the dictionary is sorted or we'll have inconsistent hashes
         block_string = json.dumps(block, sort_keys=True).encode()
         return sha256(block_string).hexdigest()
-
+    
+    @property
     def last_block(self):
         # gets the latest block of the chain (if there are blocks)
         return self.chain[-1] if self.chain else None
+    
+    def valid_block(self, block):
+        # check if a block's hash is less than the target
+        return block["hash"] < self.target
+    
+    def add_block(self, block):
+        # TODO: add proper validation logic here
+        self.chain.append(block)
     
     # adding a primitive unsigned transaction for illustration's sake
     def new_transaction(self, sender, recipient, amount):
