@@ -83,8 +83,40 @@ class Blockchain(object):
         # TODO: add proper validation logic here
         self.chain.append(block)
     
+    # the following function isn't described in any way in the book
+    # so we've to find out what it does with trial and error
+    def recalculate_target(self, block_index):
+        """
+        returns the number we need to get below to mine a block
+        """
+        # check if we need to recalculate the target
+        if block_index % 10 == 0:
+            # expected time span of 10 blocks
+            expected_timespan = 10 * 10
+
+            # calculate the actual time span
+            actual_timespan = self.chain[-1]["timestamp"]
+            expected_timespan = self.chain[-10]["timestamp"]
+
+            # figure out what the offset is
+            ratio = actual_timespan / expected_timespan
+
+            # now let's adjust the to not be too extreme
+            ratio = max(0.25, ratio)
+            ratio = min(4.00, ratio)
+
+            # calculate the new target by multiplying the current one by the ratio
+            new_target = int(self.target, 16) * ratio
+
+            self.target = format(math.floor(new_target), "x").zfill(64)
+            logger.info(f"Calculated new mining target: {self.target}")
+
+        return self.target
+    
+    
     # adding a primitive unsigned transaction for illustration's sake
     def new_transaction(self, sender, recipient, amount):
+        # TODO: moving this method to its own class in transactions.py
         # adds a new transaction to a list of pending transactions
         self.pending_transactions.append({
             "recipient": recipient,
