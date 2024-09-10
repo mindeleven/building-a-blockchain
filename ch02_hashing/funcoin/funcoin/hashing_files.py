@@ -1,7 +1,7 @@
 from hashlib import sha256
 
 # example image from pixabay https://pixabay.com/de/photos/banknoten-dollar-us-dollar-geld-941246/
-file = open("../../../assets/image/pixabay-bank-notes-941246_1280.jpg", "rb")
+file = open("../../../assets/images/pixabay-bank-notes-941246_1280.jpg", "rb")
 hash = sha256(file.read()).hexdigest()
 file.close()
 
