@@ -11,4 +11,4 @@ Code examples and most of the explanations I've added as comments are borrowed f
 
 ## Resources
 
-Learn Blockchain by Building One, Daniel van Flymen, Apess 2020, independently published.
+Learn Blockchain by Building One, Daniel van Flymen, Apress 2020, independently published.
