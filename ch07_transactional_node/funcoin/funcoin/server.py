@@ -13,12 +13,19 @@ logger = structlog.getLogger()
 class Server: 
 
     def __init__(self, blockchain, connection_pool, p2p_protocol):
-        connection_pool = connection_pool
-        pass
+        self.blockchain = blockchain
+        self.connection_pool = connection_pool
+        self.p2p_protocol = p2p_protocol
+        self.external_ip = None
+        self.port = None
 
+        if not(blockchain and connection_pool and p2p_protocol):
+            logger.error("'blockchain', 'connection_pool' and 'gossip_protocol' must all be instantiated")
+            raise Exception("Could not start")
+        
     async def get_external_ip(self):
         # finds our "external IP" so we can advertise it to our peers
-        pass
+        self.external_ip = await get_external_ip
 
     async def handle_connection(self, reader: SteamReader, writer: SteamWriter):
         # this function is called when we receive a new connection
