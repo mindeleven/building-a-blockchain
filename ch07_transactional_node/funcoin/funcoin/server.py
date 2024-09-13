@@ -13,6 +13,8 @@ logger = structlog.getLogger()
 class Server: 
 
     def __init__(self, blockchain, connection_pool, p2p_protocol):
+        # bootstrapping our modules to the server:
+        # server class will always have access to blockchain via self.blockchain
         self.blockchain = blockchain
         self.connection_pool = connection_pool
         self.p2p_protocol = p2p_protocol
@@ -25,53 +27,61 @@ class Server:
         
     async def get_external_ip(self):
         # finds our "external IP" so we can advertise it to our peers
-        self.external_ip = await get_external_ip
+        self.external_ip = await get_external_ip # method responsible for finding our external IP
 
     async def handle_connection(self, reader: SteamReader, writer: SteamWriter):
         # this function is called when we receive a new connection
         # the writer object represents the connection peer 
-
-        # get a nickname from the client
-        writer.write("> Choose your nickname:\n".encode())
-
-        response = await reader.readuntil(b"\n")
-        writer.nickname = response.decode().strip()
-
-        # writer.write("You sent: ".encode() + response)
-        self.connection_pool.add_new_user_to_pool(writer)
-        self.connection_pool.send_welcome_message(writer)
-        
-        # announce the arrival of this new user
-        self.connection_pool.broadcast_user_join(writer)
+        # we wait 'forever' until a message is sent to us terminated by a "\n" character
+        # TODO: potential vulnerability, the server could get spammed by anyone
 
         while True:
             try:
+                # wait forever on new data to arrive
                 # handle and/or reply to the incoming data
                 data = await reader.readuntil(b"\n")
+
+                # we try to decode the message by assuming it was sent to us as UTF-8
+                decoded_data = data.decode("utf-8").strip()
+
+                try:
+                    # using Marshmallow to parse and validate in incoming message
+                    # from a peer
+                    message = BaseSchema().loads(decoded_data)
+
+                except MarshmallowError:
+                    logger.info("Received unreadable message", peer=writer)
+                    break
+
+                # extract the adress from the message
+                # and add it to the writer object
+                writer.address = message["meta"]["address"]
+
+                # let's add the peer to our connection pool
+                self.connection_pool.add_peer(writer)
+
+                # ... and handle the message
+                # once the message has been parsed successfully
+                # we assume that all relevant fields exist
+                # and let the p2p_protocol decide what to do next
+                await self.p2p_protocol.handle_message(message, writer)
+
+                await writer.drain()
+
+                if writer.is_closing():
+                    break
+
             except asyncio.exceptions.IncompleteReadError:
                 # an error happened, break out of the wait loop
                 self.connection_pool.broadcast_user_quit(writer)
                 break
 
-            message = data.decode().strip()
-            if message == "/quit":
-                self.connection_pool.broadcast_user_quit(writer)
-                break
-            elif message == "/list":
-                self.connection_pool.list_users(writer)
-            else:
-                self.connection_pool.broadcast_new_message(writer, message)
-
-            await writer.drain()
-
-            if writer.is_closing():
-                break
-        
         # we're now outside the message loop and the user has quit
 
         # let's close the connection and clean up
         writer.close()
         await writer.wait_closed()
+        self.connection_pool.remove_peer(writer)
 
     async def listen(self, hostname="0.0.0.0", port=8888):
         # this is the listen method which spwans our server
