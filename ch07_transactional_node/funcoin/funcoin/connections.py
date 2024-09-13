@@ -1,3 +1,5 @@
+# class to store all the logic that manages our ConnectionPool
+
 class ConnectionPool:
 
     def __init__(self):
@@ -76,4 +78,21 @@ class ConnectionPool:
         Removes an existing user from our existing pool
         """
         self.connection_pool.remove(writer)
+    
+    @staticmethod
+    def get_address_string(writer):
+        # get a peer's ip:port (address)
+        pass
+
+    def add_peer(self, writer):
+        # add a peer to our connection pool
+        pass
+
+    def remove_peer(self, writer):
+        # remove a peer to our connection pool
+        pass
+
+    def get_alive_peers(self, count):
+        # add a peer to our connection pool
+        pass
 
